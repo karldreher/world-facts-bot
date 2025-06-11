@@ -2,18 +2,21 @@
 from mcp.server.fastmcp import FastMCP
 
 # Create an MCP server
-mcp = FastMCP("Demo")
+mcp = FastMCP("World Facts Bot")
 
 
 # Add an addition tool
 @mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers"""
-    return a + b
+# Todo: object type
+def get_cia_facts(country: str) -> object:
+    """Get the facts from the CIA World Factbook"""
+    # do something with https://www.cia.gov/the-world-factbook/countries/
+    return {}
 
 
-# Add a dynamic greeting resource
-@mcp.resource("greeting://{name}")
-def get_greeting(name: str) -> str:
+# Add a dynamic country resource
+@mcp.resource("country://{name}")
+def get_country(name: str) -> str:
     """Get a personalized greeting"""
-    return f"Hello, {name}!"
+    facts = get_cia_facts(name)
+    return f"Facts about {name}: {facts}"
