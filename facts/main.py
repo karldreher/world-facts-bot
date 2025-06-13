@@ -254,3 +254,13 @@ COUNTRIES = [
     "Zambia",
     "Zimbabwe",
 ]
+"""
+Defines a list of country names for easy lookup in the CIA World Factbook.
+These were taken from the CIA World Factbook website as of Jun 2025.
+"""
+
+COUNTRIES_LOWER = [country.lower() for country in COUNTRIES]
+"""
+Defines a list of country names and their lowercase equivalents for easy lookup.
+See also COUNTRIES.  This is a list comprehension of that variable into lowercase.
+"""
