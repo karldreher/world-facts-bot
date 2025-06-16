@@ -27,6 +27,16 @@ def get_cia_facts(country: str) -> object:
 # Add a dynamic country resource
 @mcp.resource("country://{name}")
 def get_country(name: str) -> str:
+    """Check that a country exists"""
+    if name.lower() in COUNTRIES:
+        return f"{name} is a valid country."
+    else:
+        return "Not a valid country."
+
+
+# Add a dynamic country facts resource
+@mcp.resource("country://{name}/facts")
+def get_country_facts(name: str) -> str:
     """Talk about a country"""
     facts = get_cia_facts(name)
     return f"Facts about {name}: {facts}"
