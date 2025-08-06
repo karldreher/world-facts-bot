@@ -1,15 +1,22 @@
 # server.py
-from facts.main import COUNTRIES_LOWER as COUNTRIES
-from server.main import mcp
+
+from countries.main import COUNTRIES_LOWER, mcp as countries
 from scraping.main import get_content, parse_factbook_data
-from facts.prompts import PROMPTS  # noqa: F401
+
+from fastmcp import FastMCP
+
+# Create an MCP server
+mcp = FastMCP("World Facts Bot")
+async def setup():
+    """Setup function to initialize the MCP server."""
+    await mcp.import_server(countries)
 
 
 def _get_cia_facts_impl(country: str) -> object:
     if not country:
         return "Please provide a country name."
     try:
-        if country.lower() in COUNTRIES:
+        if country.lower() in COUNTRIES_LOWER:
             slug = country.lower().replace(" ", "-")
 
             # Construct the CIA World Factbook URL
@@ -31,7 +38,7 @@ def get_cia_facts(country: str) -> object:
 @mcp.resource("country://{name}")
 def get_country(name: str) -> str:
     """Check that a country exists"""
-    if name.lower() in COUNTRIES:
+    if name.lower() in COUNTRIES_LOWER:
         return f"{name} is a valid country."
     else:
         return "Not a valid country."
