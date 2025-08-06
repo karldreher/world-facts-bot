@@ -5,10 +5,7 @@ from scraping.main import get_content, parse_factbook_data
 from facts.prompts import PROMPTS  # noqa: F401
 
 
-@mcp.tool()
-def get_cia_facts(country: str) -> object:
-    # Todo: return type
-    """Get the facts from the CIA World Factbook"""
+def _get_cia_facts_impl(country: str) -> object:
     if not country:
         return "Please provide a country name."
     try:
@@ -22,6 +19,12 @@ def get_cia_facts(country: str) -> object:
             return facts
     except Exception as e:
         return e
+
+
+@mcp.tool()
+def get_cia_facts(country: str) -> object:
+    """Get the facts from the CIA World Factbook"""
+    return _get_cia_facts_impl(country)
 
 
 # Add a dynamic country resource
@@ -38,5 +41,8 @@ def get_country(name: str) -> str:
 @mcp.resource("country://{name}/facts")
 def get_country_facts(name: str) -> str:
     """Talk about a country"""
-    facts = get_cia_facts(name)
+    facts = _get_cia_facts_impl(name)
     return f"Facts about {name}: {facts}"
+
+if __name__ == "__main__":
+    mcp.run()
