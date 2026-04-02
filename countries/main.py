@@ -1,5 +1,5 @@
 from fastmcp import FastMCP
-from mcp.server.fastmcp.prompts import base
+from fastmcp.prompts import base
 
 COUNTRIES = [
     "Afghanistan",
@@ -271,12 +271,18 @@ See also COUNTRIES.  This is a list comprehension of that variable into lowercas
 
 mcp = FastMCP(name="countries")
 
+
+@mcp.tool()
+def list_countries() -> list[str]:
+    """List all countries available in the CIA World Factbook."""
+    return COUNTRIES
+
+
 @mcp.prompt()
 def list_countries_prompt() -> list[base.Message]:
     """Prompt for listing available countries"""
     return [
         base.UserMessage("What are the available countries in the CIA World Factbook? Please list them."),
-        # TODO: Is COUNTRIES a tool? 
         base.AssistantMessage("Here is the list of countries available in the CIA World Factbook:\n" + "\n".join(COUNTRIES))
     ]
 

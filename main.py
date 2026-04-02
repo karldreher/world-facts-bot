@@ -1,5 +1,7 @@
 # server.py
 
+import asyncio
+
 from countries.main import COUNTRIES_LOWER, mcp as countries
 from scraping.main import get_content, parse_factbook_data
 
@@ -7,31 +9,35 @@ from fastmcp import FastMCP
 
 # Create an MCP server
 mcp = FastMCP("World Facts Bot")
-async def setup():
-    """Setup function to initialize the MCP server."""
-    await mcp.import_server(countries)
+mcp.mount(countries)
+
+_facts_cache: dict[str, str] = {}
 
 
-def _get_cia_facts_impl(country: str) -> object:
+async def _get_cia_facts_impl(country: str) -> str:
     if not country:
         return "Please provide a country name."
+    if country.lower() not in COUNTRIES_LOWER:
+        return f"{country!r} is not a recognized country."
     try:
-        if country.lower() in COUNTRIES_LOWER:
-            slug = country.lower().replace(" ", "-")
-
-            # Construct the CIA World Factbook URL
-            url = f"https://www.cia.gov/the-world-factbook/countries/{slug}/"
-            content = get_content(url)
-            facts = parse_factbook_data(content)
-            return facts
+        slug = country.lower().replace(" ", "-")
+        if slug in _facts_cache:
+            return _facts_cache[slug]
+        # Construct the CIA World Factbook URL
+        url = f"https://www.cia.gov/the-world-factbook/countries/{slug}/"
+        content = await asyncio.to_thread(get_content, url)
+        facts = parse_factbook_data(content)
+        if facts:
+            _facts_cache[slug] = facts
+        return facts or "No facts found."
     except Exception as e:
-        return e
+        return str(e)
 
 
 @mcp.tool()
-def get_cia_facts(country: str) -> object:
+async def get_cia_facts(country: str) -> str:
     """Get the facts from the CIA World Factbook"""
-    return _get_cia_facts_impl(country)
+    return await _get_cia_facts_impl(country)
 
 
 # Add a dynamic country resource
@@ -46,9 +52,9 @@ def get_country(name: str) -> str:
 
 # Add a dynamic country facts resource
 @mcp.resource("country://{name}/facts")
-def get_country_facts(name: str) -> str:
+async def get_country_facts(name: str) -> str:
     """Talk about a country"""
-    facts = _get_cia_facts_impl(name)
+    facts = await _get_cia_facts_impl(name)
     return f"Facts about {name}: {facts}"
 
 if __name__ == "__main__":
