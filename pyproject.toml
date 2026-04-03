@@ -1,0 +1,18 @@
+[project]
+name = "world-facts-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastmcp>=3.2.0",
+    "requests>=2.33.1",
+    "trafilatura>=2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.15.8",
+    "mcp[cli]>=1.26.0",
+]
