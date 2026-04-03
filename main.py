@@ -2,6 +2,7 @@
 
 import asyncio
 
+import cache
 from countries.main import COUNTRIES_LOWER, mcp as countries
 from scraping.main import get_content, parse_factbook_data
 
@@ -11,8 +12,6 @@ from fastmcp import FastMCP
 mcp = FastMCP("World Facts Bot")
 mcp.mount(countries)
 
-_facts_cache: dict[str, str] = {}
-
 
 async def _get_cia_facts_impl(country: str) -> str:
     if not country:
@@ -21,14 +20,15 @@ async def _get_cia_facts_impl(country: str) -> str:
         return f"{country!r} is not a recognized country."
     try:
         slug = country.lower().replace(" ", "-")
-        if slug in _facts_cache:
-            return _facts_cache[slug]
+        cached = await asyncio.to_thread(cache.get, slug)
+        if cached:
+            return cached
         # Construct the CIA World Factbook URL
         url = f"https://www.cia.gov/the-world-factbook/countries/{slug}/"
         content = await asyncio.to_thread(get_content, url)
         facts = parse_factbook_data(content)
         if facts:
-            _facts_cache[slug] = facts
+            await asyncio.to_thread(cache.put, slug, facts)
         return facts or "No facts found."
     except Exception as e:
         return str(e)
