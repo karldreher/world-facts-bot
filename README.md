@@ -1,3 +1,14 @@
+# Deprecation Notice!  
+I cannot say this better than CIA said themselves.  I feel this might be best with an archive link...
+
+https://web.archive.org/web/20260402003608/https://www.cia.gov/stories/story/spotlighting-the-world-factbook-as-we-bid-a-fond-farewell/
+
+> One of CIA’s oldest and most recognizable intelligence publications, The World Factbook, has sunset. The World Factbook served the Intelligence Community and the general public as a longstanding, one-stop basic reference about countries and communities around the globe. 
+> ...
+> The World Factbook appealed to researchers, news organizations, teachers, students, and international travelers. 
+
+This speaks volumes.  🤷
+
 # world-facts-bot
 
 An MCP server that provides CIA World Factbook data for countries worldwide.
